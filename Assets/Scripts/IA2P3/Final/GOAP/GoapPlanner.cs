@@ -24,22 +24,21 @@ public class GoapPlanner
                              node => Explode(node, actions, ref _watchdog),
                              state => GetHeuristic(state, to), action);
     }
-    public void GoapReturn(IEnumerable<GOAPState> goapstate, Action<IEnumerable<GOAPAction>> goapaction)
+    public void GoapReturn (IEnumerable<GOAPState> goapstate, Action<IEnumerable<GOAPAction>> goapaction)
     {
 
-        var calculation = CalculateGoap(goapstate);
+       var calculation = CalculateGoap(goapstate);
         goapaction?.Invoke(calculation);
     }
 
     public static FiniteStateMachine ConfigureFSM(IEnumerable<GOAPAction> plan, Func<IEnumerator, Coroutine> startCoroutine)
     {
-        Debug.Log(plan.Any());
         var prevState = plan.First().linkedState;
 
         var fsm = new FiniteStateMachine(prevState, startCoroutine);
         foreach (var item in plan)
         {
-
+  
             item.linkedState.Transitions.Clear();
         }
         foreach (var action in plan.Skip(1))
@@ -74,8 +73,7 @@ public class GoapPlanner
         watchdog--;
 
         return actions.Where(action => action.preconditions.All(kv => kv.In(node.values)))
-                      .Aggregate(new List<WeightedNode<GOAPState>>(), (possibleList, action) =>
-                      {
+                      .Aggregate(new List<WeightedNode<GOAPState>>(), (possibleList, action) => {
                           var newState = new GOAPState(node);
                           newState.values.UpdateWith(action.effects);
                           newState.generatingAction = action;

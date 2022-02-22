@@ -98,7 +98,7 @@ public class GoapCircularEnemy : MonoBehaviour
                                               new GOAPAction("Chase")
                                                  .Pre("isPlayerInSight", true)
                                                  .Pre("Healthy", true)
-                                                 .Effect("isPlayerInRange", false)
+                                                 .Effect("isPlayerInRange", true)
                                                  .LinkedState(chaseState),
 
                                               new GOAPAction("Recharge")
@@ -162,7 +162,7 @@ public class GoapCircularEnemy : MonoBehaviour
                                               new GOAPAction("Chase")
                                                  .Pre("isPlayerInSight", true)
                                                  .Pre("Healthy", true)
-                                                 .Effect("isPlayerInRange", false)
+                                                 .Effect("isPlayerInRange", true)
                                                  .LinkedState(chaseState),
 
                                               new GOAPAction("Recharge")
@@ -221,7 +221,8 @@ public class GoapCircularEnemy : MonoBehaviour
     }
     public void CallConfigure(IEnumerable<GOAPAction> plan)
     {
-        ConfigureFsm(plan); 
+        ConfigureFsm(plan);
+        
     }
     public void TakeDamage()
     {

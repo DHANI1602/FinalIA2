@@ -69,7 +69,6 @@ public class AStar<T> {
             }
         }
         action(null);
-        // todo: ConfigureFSM
         yield return null;
     }
 

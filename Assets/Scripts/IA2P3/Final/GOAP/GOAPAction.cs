@@ -3,8 +3,7 @@ using FSM;
 using UnityEngine;
 using System;
 
-public class GOAPAction
-{
+public class GOAPAction {
 
     public Dictionary<string, object> preconditions { get; private set; }
     public Dictionary<string, object> effects       { get; private set; }
@@ -12,7 +11,7 @@ public class GOAPAction
     public float                    cost          { get; private set; }
     public IState                   linkedState   { get; private set; }
 
-    //public Func<GOAPState, bool> preconditionLamnda { get; private set; }
+    public Func<GOAPState, bool> preconditionLamnda { get; private set; }
 
 
     public GOAPAction(string name) {
@@ -33,12 +32,12 @@ public class GOAPAction
         return this;
     }
 
-    public GOAPAction Pre(string s, object value) {
+    public GOAPAction Pre(string s, bool value) {
         preconditions[s] = value;
         return this;
     }
 
-    public GOAPAction Effect(string s, object value) {
+    public GOAPAction Effect(string s, bool value) {
         effects[s] = value;
         return this;
     }
