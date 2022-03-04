@@ -10,7 +10,7 @@ public class GOAPAction {
 
     public delegate void DoEffect(bool obj);
 
-    public Dictionary<string, CheckPrecondition> preconditions { get; private set; }
+    public Dictionary<string, object> preconditions { get; private set; }
     public Dictionary<string, object> effects       { get; private set; }
     public string                   name          { get; private set; }
     public float                    cost          { get; private set; }
@@ -22,7 +22,7 @@ public class GOAPAction {
     public GOAPAction(string name) {
         this.name     = name;
         cost          = 1f;
-        preconditions = new Dictionary<string, CheckPrecondition>();
+        preconditions = new Dictionary<string, object>();
         effects       = new Dictionary<string, object>();
     }
 
