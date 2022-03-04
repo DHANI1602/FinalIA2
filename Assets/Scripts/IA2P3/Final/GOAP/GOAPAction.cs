@@ -5,7 +5,12 @@ using System;
 
 public class GOAPAction {
 
-    public Dictionary<string, object> preconditions { get; private set; }
+
+    public delegate bool CheckPrecondition(object obj);
+
+    public delegate void DoEffect(bool obj);
+
+    public Dictionary<string, CheckPrecondition> preconditions { get; private set; }
     public Dictionary<string, object> effects       { get; private set; }
     public string                   name          { get; private set; }
     public float                    cost          { get; private set; }
@@ -17,7 +22,7 @@ public class GOAPAction {
     public GOAPAction(string name) {
         this.name     = name;
         cost          = 1f;
-        preconditions = new Dictionary<string, object>();
+        preconditions = new Dictionary<string, CheckPrecondition>();
         effects       = new Dictionary<string, object>();
     }
 
@@ -32,7 +37,7 @@ public class GOAPAction {
         return this;
     }
 
-    public GOAPAction Pre(string s, bool value) {
+    public GOAPAction Pre(string s, CheckPrecondition value) {
         preconditions[s] = value;
         return this;
     }
