@@ -52,7 +52,7 @@ public class GoapCircularEnemy : MonoBehaviour
 
         var actions = new List<GOAPAction>{
                                               new GOAPAction("Patrol")
-                                                 .Effect("DistanceFromPlayer", x=>x=true),
+                                                 .Effect("DistanceFromPlayer", x=>x=0),
 
                                               new GOAPAction("Chase")
                                                  .Pre("DistanceFromPlayer", x=>(float)x < 15f)
@@ -63,7 +63,7 @@ public class GoapCircularEnemy : MonoBehaviour
                                               new GOAPAction("RunAway")
                                                  .Pre("Healthy", x=>(int)x <= 2)
                                                  .Pre("isPlayerInRange", x=>(float)x <= chaseState.rangeDistance)
-                                                 .Effect("Healthy", true)
+                                                 .Effect("Healthy", x=>x=3)
                                                  .Effect("isPlayerInRange", false)
                                                  .Cost(2f),
 
