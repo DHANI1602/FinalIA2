@@ -68,8 +68,8 @@ public class AStar<T> {
                 }
             }
         }
-        action(null);
-        yield return null;
+       /* action(null);
+        yield return null;*/
     }
 
     public void StartRun(T start,

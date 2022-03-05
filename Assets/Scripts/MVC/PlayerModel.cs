@@ -17,6 +17,6 @@ public class PlayerModel : MonoBehaviour
 
     public CircleQuery query;
 
-
+    public bool isAlive;
 
 }

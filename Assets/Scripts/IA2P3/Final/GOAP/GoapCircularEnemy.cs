@@ -39,6 +39,11 @@ public class GoapCircularEnemy : MonoBehaviour
 
         //OnlyPlan();
         PlanAndExecute();
+
+
+        // EL ACTIONS , EL FROM Y EL TO TIENEN QUE SER IGUALES EN PLANANDEXECUTE(); Y ONLIPLAN(); Y REPLAN();
+
+        // LOGRAR QUE EN EL FROM PUEDA PASARLE MINIMO UN BOOL, FLOAT, INT E STRING(O ENUM)
     }
 
     private void OnlyPlan()
@@ -47,10 +52,10 @@ public class GoapCircularEnemy : MonoBehaviour
 
         var actions = new List<GOAPAction>{
                                               new GOAPAction("Patrol")
-                                                 .Effect("isPlayerInSight", true),
+                                                 .Effect("DistanceFromPlayer", x=>x=true),
 
                                               new GOAPAction("Chase")
-                                                 .Pre("isPlayerInSight", x=>(float)x < 15f)
+                                                 .Pre("DistanceFromPlayer", x=>(float)x < 15f)
                                                  .Pre("Healthy", x=>(int)x > 2)
                                                  .Effect("isPlayerInSight", false)
                                                  .Effect("isPlayerInRange", true),
@@ -66,22 +71,30 @@ public class GoapCircularEnemy : MonoBehaviour
                                               new GOAPAction("Range Attack")
                                                  .Pre("isPlayerInRange", x=>(float)x <= chaseState.rangeDistance)
                                                  .Pre("hasAmmo",  x=>(int)x > 0)
-                                                 .Effect("isPlayerAlive", false),
+                                                 .Effect("isPlayerAlive", x=> x = false),
 
                                               new GOAPAction("Recharge")
                                                  .Pre("hasAmmo", x=>(int)x <= 0)
                                                  .Effect("hasAmmo", true)
                                           };
+
+        // ESTOS SON LOS QUE YO TENGO AHORA
         var from = new GOAPState();
         from.values["isPlayerInSight"] = (_player.transform.position - transform.position).sqrMagnitude;
-        from.values["isPlayerInRange"] = (_player.transform.position - transform.position).sqrMagnitude;
-        from.values["isPlayerAlive"] = true;
+        from.values["isPlayerInRange"] = false;
+        from.values["isPlayerAlive"] = _player._playerModel.isAlive;
         from.values["hasAmmo"] = ammo;
         from.values["Healthy"] = life;
 
+        // esto lo hice yo
+        from.values["DistanceFromPlayer"] = (_player.transform.position - transform.position).sqrMagnitude;
+
+        //ESTO SON LOS ESTADOS QUE YO QUIERO
         var to = new GOAPState();
         to.values["isPlayerAlive"] = false;
         to.values["Healthy"] = true;
+
+        //EMPIEZO DESDE EL FINAL Y VOY CHECKEANDO HASTA QUE LLEGO AL INICIO
 
         var planner = new GoapPlanner();
 
