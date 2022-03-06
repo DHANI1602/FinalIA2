@@ -10,17 +10,17 @@ public class AStar<T> {
     public event Action<IEnumerable<T>, Action<IEnumerable<GOAPAction>>> OnPathCompleted;
     Func<IEnumerator, Coroutine> startCoroutine;
 
-
     public AStar(Func<IEnumerator, Coroutine> _coroutine)
     {
         startCoroutine = _coroutine;
     }
-    public IEnumerator Run(T                                     start,
+    
+    public IEnumerator Run(T                                        start,
                               Func<T, bool>                         isGoal,
                               Func<T, IEnumerable<WeightedNode<T>>> explode,
                               Func<T, float>                        getHeuristic,
-                              Action<IEnumerable<GOAPAction>> action) {
-        
+                              Action<IEnumerable<GOAPAction>>       action) 
+    {
         var queue     = new PriorityQueue<T>();
         var distances = new Dictionary<T, float>();
         var parents   = new Dictionary<T, T>();
@@ -28,16 +28,18 @@ public class AStar<T> {
 
         distances[start] = 0;
         queue.Enqueue(new WeightedNode<T>(start, 0));
+        
+        var stopWatch = new Stopwatch();
+        stopWatch.Start();
 
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
-
-        while (!queue.IsEmpty) {
-            if (stopwatch.ElapsedMilliseconds >= 1 / 60f)
+        while (!queue.IsEmpty)
+        {
+            if (stopWatch.ElapsedMilliseconds > 1/60f)
             {
-                yield return null;
-                stopwatch.Restart();
+                yield return new WaitForEndOfFrame();
+                stopWatch.Restart();
             }
+            
             var dequeued = queue.Dequeue();
             visited.Add(dequeued.Element);
 
@@ -46,11 +48,11 @@ public class AStar<T> {
                 OnPathCompleted?.Invoke(CommonUtils.CreatePath(parents, dequeued.Element), action);
                 yield break;
             }
-           
 
             var toEnqueue = explode(dequeued.Element);
 
-            foreach (var transition in toEnqueue) {
+            foreach (var transition in toEnqueue) 
+            {
                 var neighbour                   = transition.Element;
                 var neighbourToDequeuedDistance = transition.Weight;
 
@@ -67,9 +69,13 @@ public class AStar<T> {
                     queue.Enqueue(new WeightedNode<T>(neighbour, newDistance + getHeuristic(neighbour)));
                 }
             }
+            
+            if (queue.IsEmpty)
+            {
+                OnPathCompleted?.Invoke(CommonUtils.CreatePath(parents, dequeued.Element), action);
+                yield break;
+            }
         }
-       /* action(null);
-        yield return null;*/
     }
 
     public void StartRun(T start,
@@ -78,6 +84,7 @@ public class AStar<T> {
                               Func<T, float> getHeuristic,
                               Action<IEnumerable<GOAPAction>> action)
     {
+       UnityEngine.Debug.Log("Astar :: StartRun");
         startCoroutine(Run(start, isGoal, explode, getHeuristic, action));
     }
     

@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using FSM;
 using UnityEngine;
 using System;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 public class GoapCircularEnemy : MonoBehaviour
 {
@@ -23,9 +25,15 @@ public class GoapCircularEnemy : MonoBehaviour
     public int ammo = 3;
     public SpriteRenderer sprite;
 
-    public IsPlayerInRange isPlayerInRange;
+    //public IsPlayerInRange isPlayerInRange;
 
     Action<IEnumerable<GOAPAction>> goapToPlan;
+    
+    //Variables de estado
+    private const string DistanceFromPlayer = "DistanceFromPlayer";
+    private const string Healthy = "Healthy";
+    private const string HasAmmo = "HasAmmo";
+    private const string IsPlayerAlive = "IsPlayerAlive";
 
     private void Awake()
     {
@@ -47,11 +55,9 @@ public class GoapCircularEnemy : MonoBehaviour
 
         // LOGRAR QUE EN EL FROM PUEDA PASARLE MINIMO UN BOOL, FLOAT, INT E STRING(O ENUM)
     }
-
+/*
     private void OnlyPlan()
     {
-
-
         var actions = new List<GOAPAction>{
                                               new GOAPAction("Patrol")
                                                  .Effect("DistanceFromPlayer", x=>x=0),
@@ -68,8 +74,7 @@ public class GoapCircularEnemy : MonoBehaviour
                                                  .Effect("Healthy", x=>x=3)
                                                  .Effect("isPlayerInRange", x=>x=20)
                                                  .Cost(2f),
-
-
+                                              
                                               new GOAPAction("Range Attack")
                                                  .Pre("isPlayerInRange", x=>(float)x <= chaseState.rangeDistance)
                                                  .Pre("hasAmmo",  x=>(int)x > 0)
@@ -77,13 +82,13 @@ public class GoapCircularEnemy : MonoBehaviour
 
                                               new GOAPAction("Recharge")
                                                  .Pre("hasAmmo", x=>(int)x <= 0)
-                                                 .Effect("hasAmmo", x=>x=3)
+                                                 .Effect("hasAmmo", x=> x = 3)
                                           };
 
         // ESTOS SON LOS QUE YO TENGO AHORA
         var from = new GOAPState();
         from.values["DistanceFromPlayer"] = (_player.transform.position - transform.position).sqrMagnitude;
-        from.values["isPlayerInRange"] =(_player.transform.position - transform.position).sqrMagnitude;
+        from.values["isPlayerInRange"] = (_player.transform.position - transform.position).sqrMagnitude;
         from.values["isPlayerAlive"] = _player._playerModel.isAlive;
         from.values["hasAmmo"] = ammo;
         from.values["Healthy"] = life;
@@ -102,60 +107,64 @@ public class GoapCircularEnemy : MonoBehaviour
 
         planner.Run(from, to, actions, StartCoroutine, goapToPlan);
     }
-
+*/
     private void PlanAndExecute()
     {
-        var actions = new List<GOAPAction>{
-                                               new GOAPAction("Patrol")
-                                                 .Effect("DistanceFromPlayer", x=>x=0)
-                                                 .LinkedState(patrolState),
-
-                                              new GOAPAction("Chase")
-                                                 .Pre("DistanceFromPlayer", x=>(float)x < 17f)
-                                                 .Pre("Healthy", x=>(int)x > 2)
-                                                 .Effect("isPlayerInRange", x=>x=0)
-                                                 .LinkedState(chaseState),
-
-                                              new GOAPAction("Recharge")
-                                                 .Pre("hasAmmo", x=>(int)x <= 0)
-                                                 .Effect("hasAmmo", x=>x=3)
-                                                 .LinkedState(rechargeState),
-
-                                              new GOAPAction("Range Attack")
-                                                 .Pre("isPlayerInRange", x=>(float)x < chaseState.rangeDistance)
-                                                 .Pre("hasAmmo",  x=>(int)x > 0)
-                                                 .Effect("isPlayerAlive", x=> x = false)
-                                                 .Effect("hasAmmo", x=>x=0)
-                                                 .LinkedState(rangeAttackState),
-
-                                               new GOAPAction("RunAway")
-                                                 .Pre("Healthy",   x=>(int)x <= 2)
-                                                 .Pre("DistanceFromPlayer",  x=>(float)x < 17f)
-                                                 .Effect("Healthy", x=>x=3)
-                                                 .Effect("isPlayerInRange",  x=>x=20)
-                                                 .Effect("DistanceFromPlayer", x=>x =20)
-                                                 .LinkedState(runAwayState)
-
-
-                                          };
-
+        Debug.Log("GoapCircularEnemy :: PlanAndExecute");
+        var actions = new List<GOAPAction>();
         var from = new GOAPState();
-        from.values["DistanceFromPlayer"] = (_player.transform.position - transform.position).sqrMagnitude;
-        from.values["isPlayerInRange"] = 0f;//(_player.transform.position - transform.position).sqrMagnitude;
-        from.values["isPlayerAlive"] = true;//_player._playerModel.isAlive;
-        from.values["hasAmmo"] = 50; //ammo;
-        from.values["Healthy"] = 3;//life;
-
-
         var to = new GOAPState();
-        to.values["isPlayerAlive"] = false;
-       // to.values["Healthy"] = 3;
 
+        DoPlanning(out actions, out from, out to);
+       
         var planner = new GoapPlanner();
 
         planner.Run(from, to, actions, StartCoroutine, goapToPlan);
+    }
+    
+    //Saco la implementacion del plan para evitar duplicar codigo en PlanAndExecute y OnReplan, asi ambos comparten plan
+    private void DoPlanning(out List<GOAPAction> actions, out GOAPState from, out GOAPState to)
+    {
+        actions = new List<GOAPAction>{
+                                              new GOAPAction("Patrol")
+                                                 .Effect(DistanceFromPlayer, x=> x.SetValue(49f /* este valor fue solo para testear */))
+                                                 .LinkedState(patrolState),
+                                              
+                                              new GOAPAction("Chase")
+                                                 .Pre(DistanceFromPlayer, x=>x.GetValue<float>() <= 50f/* este valor fue solo para testear */)//modelDelEnemigo.IsNearDistance
+                                                 .Pre(Healthy, x=>x.GetValue<int>() > 2)
+                                                 .Effect(DistanceFromPlayer, x=>x.SetValue(29f))
+                                                 .LinkedState(chaseState),
+                                              
+                                              new GOAPAction("Recharge")
+                                                 .Pre(HasAmmo, x=> x.GetValue<int>() <= 0)
+                                                 .Effect(HasAmmo, x=> x.SetValue(3))
+                                                 .LinkedState(rechargeState),
+                                              
+                                              new GOAPAction("RunAway")
+                                                 .Pre(Healthy,   x=>x.GetValue<int>() < 3)
+                                                 .Effect(Healthy, x=> x.SetValue(3))
+                                                 .LinkedState(runAwayState),
+                                              
+                                              new GOAPAction("Range Attack")
+                                                 .Pre(DistanceFromPlayer, x=> x.GetValue<float>() <= 30f/* este valor fue solo para testear */)//chaseState.rangeDistance)
+                                                 .Pre(HasAmmo,  x=>x.GetValue<int>() > 0)
+                                                 .Effect(IsPlayerAlive, x=> x.SetValue(false))
+                                                 .Effect(HasAmmo, x=>x.SetValue(0))
+                                                 .LinkedState(rangeAttackState)
+        };
+        
+        //Estos valores estan hardcodeados, hay que revisar cuales son los valores reales de funcionamiento y cambiar el 
+        //plan de acuerdo a los nuevos valores.
+        from = new GOAPState();
+        from.values[DistanceFromPlayer] = new GOAPVariable(60f); //Reemplazar por valor no hardcodeado
+        from.values[IsPlayerAlive] = new GOAPVariable(true); //Reemplazar por valor no hardcodeado
+        from.values[HasAmmo] = new GOAPVariable(3); //Reemplazar por valor no hardcodeado
+        from.values[Healthy] = new GOAPVariable(3); //Reemplazar por valor no hardcodeado
 
-
+        to = new GOAPState();
+        to.values[IsPlayerAlive] = new GOAPVariable(false);
+        to.values[Healthy] = new GOAPVariable(3);
     }
 
     private void OnReplan()
@@ -168,7 +177,10 @@ public class GoapCircularEnemy : MonoBehaviour
         {
             return;
         }
+        
+        Debug.Log("GoapCircularEnemy :: OnReplan");
 
+        /*
         var actions = new List<GOAPAction>{
                                                new GOAPAction("Patrol")
                                                  .Effect("DistanceFromPlayer", x=>x=0)
@@ -215,13 +227,18 @@ public class GoapCircularEnemy : MonoBehaviour
         var to = new GOAPState();
         to.values["isPlayerAlive"] = false;
         to.values["Healthy"] = 3;
+        */
+        
+        var actions = new List<GOAPAction>();
+        var from = new GOAPState();
+        var to = new GOAPState();
+
+        DoPlanning(out actions, out from, out to);
 
         var planner = new GoapPlanner();
 
         planner.Run(from, to, actions, StartCoroutine, goapToPlan);
-
-
-
+        
     }
 
     private void ConfigureFsm(IEnumerable<GOAPAction> plan)
@@ -262,4 +279,30 @@ public enum IsPlayerInRange
 {
     Yes,
     No
+}
+
+public class GOAPVariable
+{
+    public object value;
+
+    public GOAPVariable(object value)
+    {
+        this.value = value;
+    }
+
+    public T GetValue<T>()
+    {
+        return (T) value;
+    }
+
+    public GOAPVariable Clone()
+    {
+        return new GOAPVariable(value);
+    }
+
+    public void SetValue<T>(T newValue)
+    {
+        //Debug.LogWarning($"old: {value}, new: {newValue}");
+        value = newValue;
+    }
 }

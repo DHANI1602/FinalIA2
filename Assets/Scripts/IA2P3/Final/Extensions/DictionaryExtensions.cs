@@ -8,20 +8,20 @@ public static class DictionaryExtensions
     {
         return set.Contains(x);
     }
-
+    
     public static bool In<K, V>(this KeyValuePair<K, V> x, Dictionary<K, V> dict)
     {
         return dict.Contains(x);
     }
-
-    public static bool In(this KeyValuePair<string, Func<object, bool>> x, Dictionary<string, object> dict)
+    
+    public static bool In(this KeyValuePair<string, Func<GOAPVariable, bool>> x, Dictionary<string, GOAPVariable> dict)
     {
         if (!dict.ContainsKey(x.Key))
             return false;
-
+    
         return x.Value.Invoke(dict[x.Key]);
     }
-
+    
     public static void UpdateWith<K, V>(this Dictionary<K, V> a, Dictionary<K, V> b)
     {
         foreach (var kvp in b)
@@ -29,8 +29,8 @@ public static class DictionaryExtensions
             a[kvp.Key] = kvp.Value;
         }
     }
-
-    public static void UpdateWith(this Dictionary<string, object> a, Dictionary<string, Action<object>> b)
+    
+    public static void UpdateWith(this Dictionary<string, GOAPVariable> a, Dictionary<string, Action<GOAPVariable>> b)
     {
         foreach (var kvp in b)
         {

@@ -4,7 +4,7 @@ using System.Linq;
 public class GOAPState
 {
     public WorldState worldState;
-    public Dictionary<string, object> values = new Dictionary<string, object>();
+    public Dictionary<string, GOAPVariable> values = new Dictionary<string, GOAPVariable>();
     public GOAPAction generatingAction = null;
     public int step = 0;
 
@@ -21,7 +21,7 @@ public class GOAPState
             if (values.ContainsKey(elem.Key))
                 values[elem.Key] = elem.Value;
             else
-                values.Add(elem.Key, elem.Value);
+                values.Add(elem.Key, elem.Value.Clone());
         }
         generatingAction = gen;
     }
