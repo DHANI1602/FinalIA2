@@ -21,6 +21,11 @@ public class ChaseState : MonoBaseState, IState
         _player = FindObjectOfType<PlayerController>();
 
     }
+
+    void Start()
+    {
+       // Debug.Log(Transitions.Keys);
+    }
     public override void Enter(IState from, Dictionary<string, object> transitionParameters = null)
     {
         base.Enter(from, transitionParameters);

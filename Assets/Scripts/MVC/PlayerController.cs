@@ -62,6 +62,8 @@ public class PlayerController : MonoBehaviour, IReminder
             MementoManager.instance.Add(this);
 
         }
+
+        
     }
 
     void Update()

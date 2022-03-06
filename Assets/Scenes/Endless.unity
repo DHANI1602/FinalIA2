@@ -820,7 +820,7 @@ PrefabInstance:
     - target: {fileID: 4294785628177476173, guid: cd7c7fb110d6a284d83a00224788b98c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4294785628177476173, guid: cd7c7fb110d6a284d83a00224788b98c,
         type: 3}
@@ -3391,6 +3391,7 @@ MonoBehaviour:
   WH: {fileID: 1137468009}
   laser: {fileID: 745052239}
   query: {fileID: 1137468006}
+  isAlive: 0
 --- !u!114 &1137468011
 MonoBehaviour:
   m_ObjectHideFlags: 0

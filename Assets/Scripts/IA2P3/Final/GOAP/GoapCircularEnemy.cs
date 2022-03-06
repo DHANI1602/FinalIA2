@@ -127,11 +127,11 @@ public class GoapCircularEnemy : MonoBehaviour
     {
         actions = new List<GOAPAction>{
                                               new GOAPAction("Patrol")
-                                                 .Effect(DistanceFromPlayer, x=> x.SetValue(49f /* este valor fue solo para testear */))
+                                                 .Effect(DistanceFromPlayer, x=> x.SetValue(0f/* este valor fue solo para testear */))
                                                  .LinkedState(patrolState),
                                               
                                               new GOAPAction("Chase")
-                                                 .Pre(DistanceFromPlayer, x=>x.GetValue<float>() <= 50f/* este valor fue solo para testear */)//modelDelEnemigo.IsNearDistance
+                                                 .Pre(DistanceFromPlayer, x=>x.GetValue<float>() < 3f/* este valor fue solo para testear */)//modelDelEnemigo.IsNearDistance
                                                  .Pre(Healthy, x=>x.GetValue<int>() > 2)
                                                  .Effect(DistanceFromPlayer, x=>x.SetValue(29f))
                                                  .LinkedState(chaseState),
@@ -147,7 +147,7 @@ public class GoapCircularEnemy : MonoBehaviour
                                                  .LinkedState(runAwayState),
                                               
                                               new GOAPAction("Range Attack")
-                                                 .Pre(DistanceFromPlayer, x=> x.GetValue<float>() <= 30f/* este valor fue solo para testear */)//chaseState.rangeDistance)
+                                                 .Pre(DistanceFromPlayer, x=> x.GetValue<float>() >= chaseState.rangeDistance/* este valor fue solo para testear */)//chaseState.rangeDistance)
                                                  .Pre(HasAmmo,  x=>x.GetValue<int>() > 0)
                                                  .Effect(IsPlayerAlive, x=> x.SetValue(false))
                                                  .Effect(HasAmmo, x=>x.SetValue(0))
@@ -157,10 +157,10 @@ public class GoapCircularEnemy : MonoBehaviour
         //Estos valores estan hardcodeados, hay que revisar cuales son los valores reales de funcionamiento y cambiar el 
         //plan de acuerdo a los nuevos valores.
         from = new GOAPState();
-        from.values[DistanceFromPlayer] = new GOAPVariable(60f); //Reemplazar por valor no hardcodeado
-        from.values[IsPlayerAlive] = new GOAPVariable(true); //Reemplazar por valor no hardcodeado
-        from.values[HasAmmo] = new GOAPVariable(3); //Reemplazar por valor no hardcodeado
-        from.values[Healthy] = new GOAPVariable(3); //Reemplazar por valor no hardcodeado
+        from.values[DistanceFromPlayer] = new GOAPVariable((_player.transform.position - transform.position).sqrMagnitude); //Reemplazar por valor no hardcodeado
+        from.values[IsPlayerAlive] = new GOAPVariable(_player._playerModel.isAlive); //Reemplazar por valor no hardcodeado
+        from.values[HasAmmo] = new GOAPVariable(ammo); //Reemplazar por valor no hardcodeado
+        from.values[Healthy] = new GOAPVariable(life); //Reemplazar por valor no hardcodeado
 
         to = new GOAPState();
         to.values[IsPlayerAlive] = new GOAPVariable(false);
