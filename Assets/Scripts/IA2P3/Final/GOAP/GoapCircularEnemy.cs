@@ -23,6 +23,8 @@ public class GoapCircularEnemy : MonoBehaviour
     public int ammo = 3;
     public SpriteRenderer sprite;
 
+    public IsPlayerInRange isPlayerInRange;
+
     Action<IEnumerable<GOAPAction>> goapToPlan;
 
     private void Awake()
@@ -57,14 +59,14 @@ public class GoapCircularEnemy : MonoBehaviour
                                               new GOAPAction("Chase")
                                                  .Pre("DistanceFromPlayer", x=>(float)x < 15f)
                                                  .Pre("Healthy", x=>(int)x > 2)
-                                                 .Effect("isPlayerInSight", false)
-                                                 .Effect("isPlayerInRange", true),
+                                                 .Effect("DistanceFromPlayer", x=>x = 20)
+                                                 .Effect("isPlayerInRange", x=>x=0),
 
                                               new GOAPAction("RunAway")
                                                  .Pre("Healthy", x=>(int)x <= 2)
                                                  .Pre("isPlayerInRange", x=>(float)x <= chaseState.rangeDistance)
                                                  .Effect("Healthy", x=>x=3)
-                                                 .Effect("isPlayerInRange", false)
+                                                 .Effect("isPlayerInRange", x=>x=20)
                                                  .Cost(2f),
 
 
@@ -75,24 +77,24 @@ public class GoapCircularEnemy : MonoBehaviour
 
                                               new GOAPAction("Recharge")
                                                  .Pre("hasAmmo", x=>(int)x <= 0)
-                                                 .Effect("hasAmmo", true)
+                                                 .Effect("hasAmmo", x=>x=3)
                                           };
 
         // ESTOS SON LOS QUE YO TENGO AHORA
         var from = new GOAPState();
-        from.values["isPlayerInSight"] = (_player.transform.position - transform.position).sqrMagnitude;
-        from.values["isPlayerInRange"] = false;
+        from.values["DistanceFromPlayer"] = (_player.transform.position - transform.position).sqrMagnitude;
+        from.values["isPlayerInRange"] =(_player.transform.position - transform.position).sqrMagnitude;
         from.values["isPlayerAlive"] = _player._playerModel.isAlive;
         from.values["hasAmmo"] = ammo;
         from.values["Healthy"] = life;
 
         // esto lo hice yo
-        from.values["DistanceFromPlayer"] = (_player.transform.position - transform.position).sqrMagnitude;
+        // from.values["DistanceFromPlayer"] = (_player.transform.position - transform.position).sqrMagnitude;
 
         //ESTO SON LOS ESTADOS QUE YO QUIERO
         var to = new GOAPState();
         to.values["isPlayerAlive"] = false;
-        to.values["Healthy"] = true;
+        to.values["Healthy"] = 3;
 
         //EMPIEZO DESDE EL FINAL Y VOY CHECKEANDO HASTA QUE LLEGO AL INICIO
 
@@ -105,49 +107,49 @@ public class GoapCircularEnemy : MonoBehaviour
     {
         var actions = new List<GOAPAction>{
                                                new GOAPAction("Patrol")
-                                                 .Effect("isPlayerInSight", true)
+                                                 .Effect("DistanceFromPlayer", x=>x=0)
                                                  .LinkedState(patrolState),
 
                                               new GOAPAction("Chase")
-                                                 .Pre("isPlayerInSight", x=>(float)x < 17f)
+                                                 .Pre("DistanceFromPlayer", x=>(float)x < 17f)
                                                  .Pre("Healthy", x=>(int)x > 2)
-                                                 .Effect("isPlayerInRange", true)
+                                                 .Effect("isPlayerInRange", x=>x=0)
                                                  .LinkedState(chaseState),
 
                                               new GOAPAction("Recharge")
                                                  .Pre("hasAmmo", x=>(int)x <= 0)
-                                                 .Effect("hasAmmo", true)
+                                                 .Effect("hasAmmo", x=>x=3)
                                                  .LinkedState(rechargeState),
 
                                               new GOAPAction("Range Attack")
                                                  .Pre("isPlayerInRange", x=>(float)x < chaseState.rangeDistance)
                                                  .Pre("hasAmmo",  x=>(int)x > 0)
-                                                 .Effect("isPlayerAlive", false)
-                                                 .Effect("hasAmmo", false)
+                                                 .Effect("isPlayerAlive", x=> x = false)
+                                                 .Effect("hasAmmo", x=>x=0)
                                                  .LinkedState(rangeAttackState),
 
                                                new GOAPAction("RunAway")
                                                  .Pre("Healthy",   x=>(int)x <= 2)
-                                                 .Pre("isPlayerInSight",  x=>(float)x < 17f)
-                                                 .Effect("Healthy", true)
-                                                 .Effect("isPlayerInRange", false)
-                                                 .Effect("isPlayerInSight", false)
+                                                 .Pre("DistanceFromPlayer",  x=>(float)x < 17f)
+                                                 .Effect("Healthy", x=>x=3)
+                                                 .Effect("isPlayerInRange",  x=>x=20)
+                                                 .Effect("DistanceFromPlayer", x=>x =20)
                                                  .LinkedState(runAwayState)
 
 
                                           };
 
         var from = new GOAPState();
-        from.values["isPlayerInSight"] = (_player.transform.position - transform.position).sqrMagnitude;
-        from.values["isPlayerInRange"] = (_player.transform.position - transform.position).sqrMagnitude;
-        from.values["isPlayerAlive"] = true;
-        from.values["hasAmmo"] = ammo;
-        from.values["Healthy"] = life;
+        from.values["DistanceFromPlayer"] = (_player.transform.position - transform.position).sqrMagnitude;
+        from.values["isPlayerInRange"] = 0f;//(_player.transform.position - transform.position).sqrMagnitude;
+        from.values["isPlayerAlive"] = true;//_player._playerModel.isAlive;
+        from.values["hasAmmo"] = 50; //ammo;
+        from.values["Healthy"] = 3;//life;
 
 
         var to = new GOAPState();
         to.values["isPlayerAlive"] = false;
-        to.values["Healthy"] = true;
+       // to.values["Healthy"] = 3;
 
         var planner = new GoapPlanner();
 
@@ -169,33 +171,33 @@ public class GoapCircularEnemy : MonoBehaviour
 
         var actions = new List<GOAPAction>{
                                                new GOAPAction("Patrol")
-                                                 .Effect("isPlayerInSight", true)
+                                                 .Effect("DistanceFromPlayer", x=>x=0)
                                                  .LinkedState(patrolState),
 
                                               new GOAPAction("Chase")
-                                                 .Pre("isPlayerInSight",  x=>(float)x < 17f)
+                                                 .Pre("DistanceFromPlayer",  x=>(float)x < 17f)
                                                  .Pre("Healthy", x=>(int)x > 2)
-                                                 .Effect("isPlayerInRange", true)
+                                                 .Effect("isPlayerInRange", x=>x=0)
                                                  .LinkedState(chaseState),
 
                                               new GOAPAction("Recharge")
                                                  .Pre("hasAmmo", x=>(int)x <= 0)
-                                                 .Effect("hasAmmo", true)
+                                                 .Effect("hasAmmo",  x=>x=3)
                                                  .LinkedState(rechargeState),
 
                                               new GOAPAction("Range Attack")
                                                  .Pre("isPlayerInRange", x=>(float)x < chaseState.rangeDistance)
                                                  .Pre("hasAmmo",  x=>(int)x <= 0)
-                                                 .Effect("isPlayerAlive", false)
-                                                 .Effect("hasAmmo", true)
+                                                 .Effect("isPlayerAlive", x=>x=false)
+                                                 .Effect("hasAmmo", x=>x=3)
                                                  .LinkedState(rangeAttackState),
 
                                               new GOAPAction("RunAway")
                                                  .Pre("Healthy",   x=>(int)x <= 2)
-                                                 .Pre("isPlayerInSight",  x=>(float)x < 17f)
-                                                 .Effect("Healthy", true)
-                                                 .Effect("isPlayerInRange", false)
-                                                 .Effect("isPlayerInSight", false)
+                                                 .Pre("DistanceFromPlayer",  x=>(float)x < 17f)
+                                                 .Effect("Healthy", x=>x=3)
+                                                 .Effect("isPlayerInRange", x=>x=20)
+                                                 .Effect("DistanceFromPlayer", x=>x =20)
                                                  .LinkedState(runAwayState)
 
 
@@ -203,16 +205,16 @@ public class GoapCircularEnemy : MonoBehaviour
                                           };
 
         var from = new GOAPState();
-        from.values["isPlayerInSight"] = (_player.transform.position - transform.position).sqrMagnitude;
+        from.values["DistanceFromPlayer"] = (_player.transform.position - transform.position).sqrMagnitude;
         from.values["isPlayerInRange"] = (_player.transform.position - transform.position).sqrMagnitude;
-        from.values["isPlayerAlive"] = true;
+        from.values["isPlayerAlive"] = _player._playerModel.isAlive;
         from.values["hasAmmo"] = ammo;
         from.values["Healthy"] = life;
 
 
         var to = new GOAPState();
         to.values["isPlayerAlive"] = false;
-        to.values["Healthy"] = true;
+        to.values["Healthy"] = 3;
 
         var planner = new GoapPlanner();
 
@@ -254,4 +256,10 @@ public class GoapCircularEnemy : MonoBehaviour
 
 
 
+}
+
+public enum IsPlayerInRange
+{
+    Yes,
+    No
 }

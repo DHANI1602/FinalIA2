@@ -33,6 +33,7 @@ public class GoapPlanner
 
     public static FiniteStateMachine ConfigureFSM(IEnumerable<GOAPAction> plan, Func<IEnumerator, Coroutine> startCoroutine)
     {
+        Debug.Log(plan.Count());
         var prevState = plan.First().linkedState;
 
         var fsm = new FiniteStateMachine(prevState, startCoroutine);
