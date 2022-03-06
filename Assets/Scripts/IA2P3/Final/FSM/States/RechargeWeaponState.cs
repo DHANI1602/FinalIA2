@@ -30,6 +30,8 @@ public class RechargeWeaponState : MonoBaseState, IState
 
                 gop.ammo += 1;
                 currentRechargeTimer = 0;
+
+                gop.hasAmmo = HasAmmo.Yes;
             }
         }
     }

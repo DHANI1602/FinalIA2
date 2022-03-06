@@ -1078,7 +1078,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 29.1
+  m_fontSize: 44.4
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1202,7 +1202,10 @@ MonoBehaviour:
   m_text: 'Dhaniel Natera
 
 
-    valentina panetta'
+    Julian Bernabeu
+
+
+    Luis Guevara'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e1ba0e0beac914edbb01e7bb0ac9bfb4, type: 2}
   m_sharedMaterial: {fileID: -5121461735086240552, guid: e1ba0e0beac914edbb01e7bb0ac9bfb4,
@@ -1230,7 +1233,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 49.9
+  m_fontSize: 60.05
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

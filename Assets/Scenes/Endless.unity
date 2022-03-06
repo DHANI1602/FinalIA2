@@ -817,6 +817,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemyKamikaze
       objectReference: {fileID: 0}
+    - target: {fileID: 4294785628177476168, guid: cd7c7fb110d6a284d83a00224788b98c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4294785628177476173, guid: cd7c7fb110d6a284d83a00224788b98c,
         type: 3}
       propertyPath: m_RootOrder

@@ -12,6 +12,8 @@ public class RangeAttackState : MonoBaseState, IState
     float timeShoot = 3;
     ModifiedObjectPooler<BulletEnemy> _bulletPool;
     public float maxDistance = 3;
+
+
     PlayerController _player;
 
     GoapCircularEnemy gop;
@@ -36,9 +38,14 @@ public class RangeAttackState : MonoBaseState, IState
             var bullet = _bulletPool.Get();
             bullet.pool = _bulletPool;
             bullet.transform.position = transform.position;
-             bullet.transform.rotation = transform.rotation;
+            bullet.transform.rotation = transform.rotation;
             shootTimeInside = timeShoot;
             gop.ammo -= 1;
+
+            if (gop.ammo <= 0)
+                gop.hasAmmo = HasAmmo.No;
+            else
+                gop.hasAmmo = HasAmmo.Yes;
         }
         var sqrDistance = (_player.transform.position - transform.position).sqrMagnitude;
 
@@ -46,8 +53,8 @@ public class RangeAttackState : MonoBaseState, IState
         {
             gop.sprite.color = Color.white;
             OnNeedsReplan?.Invoke();
-            
-            
+
+
         }
 
     }
@@ -56,16 +63,22 @@ public class RangeAttackState : MonoBaseState, IState
     {
         if (gop.life == 1 && Transitions.ContainsKey("RunAway"))
         {
-           // gop.sprite.color = Color.green;
+            // gop.sprite.color = Color.green;
             return Transitions["RunAway"];
         }
 
-        else if(gop.ammo <= 0 && Transitions.ContainsKey("Recharge"))
+        else if (gop.ammo <= 0 && Transitions.ContainsKey("Recharge"))
         {
-           // gop.sprite.color = Color.white;
+            // gop.sprite.color = Color.white;
             return Transitions["Recharge"];
         }
 
         return this;
     }
+}
+
+public enum HasAmmo
+{
+    Yes,
+    No
 }
