@@ -24,8 +24,7 @@ public class GOAPAction
     {
         if (cost < 1f)
         {
-            //Costs < 1f make the heuristic non-admissible. h() could overestimate and create sub-optimal results.
-            //https://en.wikipedia.org/wiki/A*_search_algorithm#Properties
+
             Debug.Log(string.Format("Warning: Using cost < 1f for '{0}' could yield sub-optimal results", name));
         }
 
