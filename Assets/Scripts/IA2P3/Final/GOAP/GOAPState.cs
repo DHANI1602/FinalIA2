@@ -32,16 +32,25 @@ public class GOAPState
         var other = obj as GOAPState;
         var result =
             other != null
-            && other.generatingAction == generatingAction     
+            && other.generatingAction == generatingAction       //Very important to keep! TODO: REVIEW
             && other.values.Count == values.Count
             && other.values.All(kv => kv.In(values));
-      
+        //&& other.values.All(kv => values.Contains(kv));
         return result;
     }
 
     public override int GetHashCode()
     {
-      
+        //Better hashing but slow.
+        //var x = 31;
+        //var hashCode = 0;
+        //foreach(var kv in values) {
+        //	hashCode += x*(kv.Key + ":" + kv.Value).GetHashCode);
+        //	x*=31;
+        //}
+        //return hashCode;
+
+        //Heuristic count+first value hash multiplied by polynomial primes
         return values.Count == 0 ? 0 : 31 * values.Count + 31 * 31 * values.First().GetHashCode();
     }
 
